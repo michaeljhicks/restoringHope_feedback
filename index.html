@@ -790,12 +790,16 @@
                 </label>
                 <select id="session" name="session" required>
                   <option value="">Select a session</option>
-                  <option value="1">Session 1</option>
-                  <option value="2">Session 2</option>
-                  <option value="3">Session 3</option>
-                  <option value="4">Session 4</option>
-                  <option value="5">Session 5</option>
-                  <option value="6">Session 6</option>
+                  <option value="1">
+                    Session 1: The Healthy Marriage Model
+                  </option>
+                  <option value="2">Session 2: Safety &amp; Security</option>
+                  <option value="3">Session 3: The Reactive Cycle</option>
+                  <option value="4">Session 4: Care of Self</option>
+                  <option value="5">
+                    Session 5: Communication + Emotional Connection
+                  </option>
+                  <option value="6">Session 6: Communication and Unity</option>
                 </select>
               </div>
 
@@ -1215,10 +1219,12 @@
       can route these submissions to that tab instead of the registration
       tab.
 
-      Replace the placeholder below with the deployed Apps Script Web App URL.
-      The URL should end with /exec.
+      This page uses the same Apps Script Web App URL as the registration page.
+      After updating Code.gs, edit the existing deployment and publish a new version
+      so the URL remains unchanged.
     */
-      const SCRIPT_URL = "PASTE_YOUR_FEEDBACK_WEB_APP_URL_HERE";
+      const SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbweC4-ltfwg0kP4igwHEkZtznu51aae2mljf3842wcay5ZchJSiSZJzOHbzEwubXyZW/exec";
 
       const form = document.getElementById("feedbackForm");
       const formContent = document.getElementById("formContent");
@@ -1232,37 +1238,42 @@
       const chapterInput = document.getElementById("chapterInput");
       const pageUrlInput = document.getElementById("pageUrlInput");
 
+      const SESSION_DETAILS = {
+        1: { chapter: "3", title: "The Healthy Marriage Model" },
+        2: { chapter: "4", title: "Safety & Security" },
+        3: { chapter: "5", title: "The Reactive Cycle" },
+        4: { chapter: "6", title: "Care of Self" },
+        5: { chapter: "7", title: "Communication + Emotional Connection" },
+        6: { chapter: "8", title: "Communication and Unity" },
+      };
+
       const params = new URLSearchParams(window.location.search);
       const sessionParam = params.get("session");
-      const chapterParam = params.get("chapter") || "";
-      const titleParam = params.get("title") || "";
 
       document.getElementById("year").textContent = new Date().getFullYear();
       pageUrlInput.value = window.location.href;
-      chapterInput.value = chapterParam;
-      sessionTitleInput.value = titleParam;
 
-      if (sessionParam && /^[1-6]$/.test(sessionParam)) {
+      if (sessionParam && SESSION_DETAILS[sessionParam]) {
         sessionSelect.value = sessionParam;
       }
 
       function updateSessionSummary() {
         const sessionValue = sessionSelect.value;
-        const sessionLabel = sessionValue
-          ? `Session ${sessionValue}`
-          : "Select your session in the form";
-        const chapterLabel = chapterParam ? `Chapter ${chapterParam}` : "";
-        const titleLabel = titleParam || "";
+        const details = SESSION_DETAILS[sessionValue];
 
-        const primaryParts = [sessionLabel, chapterLabel].filter(Boolean);
-        sessionDisplay.textContent = primaryParts.join(" · ");
-
-        if (titleLabel) {
-          sessionDetail.textContent = titleLabel;
-        } else {
+        if (!details) {
+          sessionDisplay.textContent = "Select your session in the form";
           sessionDetail.textContent =
             "Your response will be saved without your name or email address.";
+          chapterInput.value = "";
+          sessionTitleInput.value = "";
+          return;
         }
+
+        sessionDisplay.textContent = `Session ${sessionValue} · Chapter ${details.chapter}`;
+        sessionDetail.textContent = details.title;
+        chapterInput.value = details.chapter;
+        sessionTitleInput.value = details.title;
       }
 
       updateSessionSummary();
